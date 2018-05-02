@@ -27,12 +27,13 @@ class KitsuAPI {
       return null;
     const d = that.parseJSON(data.body.toString());
     let counter = 0;
+    let score = Math.round(d.attributes.averageRating);
     const o = {
       title: d.attributes.titles.en_jp,
       episodeCount: d.attributes.episodeCount,
       status: d.attributes.status,
       genres: await that.getGenres(d.relationships.genres.links.related),
-      score: Math.round(d.attributes.averageRating),
+      score: score ? 'unknown' : score,
       image: d.attributes.posterImage.original,
       synopsis: d.attributes.synopsis.replace(/(?:\r\n|\r|\n)/g, matched => {
         if(/\r\n/.test(matched) && counter % 2 == 0) {
