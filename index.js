@@ -5,8 +5,7 @@ class KitsuAPI {
   /**
      * @typedef {Object} Anime
      * @property {string} title
-     * @property {string} anime
-     * @property {?number} episodes null if isn't finished
+     * @property {?number} episodeCount null if isn't finished
      * @property {string} status
      * @property {Array<String>} genres
      * @property {number} score
@@ -30,7 +29,7 @@ class KitsuAPI {
     let counter = 0;
     const o = {
       title: d.attributes.titles.en_jp,
-      episodes: d.attributes.episodeCount,
+      episodeCount: d.attributes.episodeCount,
       status: d.attributes.status,
       genres: await that.getGenres(d.relationships.genres.links.related),
       score: Math.round(d.attributes.averageRating),
