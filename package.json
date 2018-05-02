@@ -1,0 +1,23 @@
+{
+  "name": "kitsu-api-wrapper",
+  "version": "1.0.0",
+  "description": "This is a wrapper for the Kitsu API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test/app.js"
+  },
+  "keywords": [
+    "kitsu",
+    "api",
+    "wrapper",
+    "anime",
+    "manga",
+    "search",
+    "library"
+  ],
+  "author": "NikoBotDev",
+  "license": "MIT",
+  "dependencies": {
+    "snekfetch": "^4.0.0"
+  }
+}
