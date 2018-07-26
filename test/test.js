@@ -1,6 +1,6 @@
 const Kitsu = require('../index');
 
-(async function T() {
+(async () => {
   const anime = await Kitsu.getAnime('One Piece');
   console.log(anime);
 })();

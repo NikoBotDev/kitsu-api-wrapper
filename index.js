@@ -1,7 +1,9 @@
-const fetch = require('snekfetch');
+const request = require('superagent');
+/* eslint-disable require-jsdoc */
 class KitsuAPI {
   constructor() {
   }
+  /* eslint-enable require-jsdoc */
   /**
      * @typedef {Object} Anime
      * @property {string} title
@@ -15,34 +17,33 @@ class KitsuAPI {
   /**
  * Search about an anime using the KitsuAPI.
  * @param {string} anime
- * @returns {Promise<?Anime>}
+ * @return {Promise<?Anime>}
  */
   static async getAnime(anime) {
     const that = new this();
-    let data = await fetch.get(`https://kitsu.io/api/edge/manga?filter[text]=${encodeURIComponent(anime)}`).catch(e => {
-      console.error(e);
+    const req = await request.get(`https://kitsu.io/api/edge/manga?filter[text]=${encodeURI(anime)}`);
+    if (!req) {
       return null;
-    });
-    if(!data)
-      return null;
-    const d = that.parseJSON(data.body.toString());
+    }
+    const d = req.body.data[0];
+    const episodeCount = d.attributes.episodeCount;
     let counter = 0;
     let score = Math.round(d.attributes.averageRating);
     const o = {
       title: d.attributes.titles.en_jp,
-      episodeCount: d.attributes.episodeCount,
+      episodeCount: episodeCount ? episodeCount : null,
       status: d.attributes.status,
       genres: await that.getGenres(d.relationships.genres.links.related),
       score: score ? 'unknown' : score,
       image: d.attributes.posterImage.original,
-      synopsis: d.attributes.synopsis.replace(/(?:\r\n|\r|\n)/g, matched => {
-        if(/\r\n/.test(matched) && counter % 2 == 0) {
+      synopsis: d.attributes.synopsis.replace(/(?:\r\n|\r|\n)/g, (matched) => {
+        if (/\r\n/.test(matched) && counter % 2 == 0) {
           counter++;
           return '\n';
         }
         counter++;
         return '';
-      })
+      }),
     };
     return o;
   }
@@ -59,18 +60,19 @@ class KitsuAPI {
   /**
    * Search about a manga using the KitsuAPI.
    * @param {string} manga manga name
-   * @returns {Promise<?Manga>}
+   * @return {Promise<?Manga>}
    */
   static async getManga(manga) {
     const that = new this();
-    let data = await fetch.get(`https://kitsu.io/api/edge/manga?filter[text]=${encodeURIComponent(manga)}`).catch(e => {
+    let data = await request.get(`https://kitsu.io/api/edge/manga?filter[text]=${encodeURIComponent(manga)}`).catch((e) => {
       console.error(e);
       return null;
     });
-    if(!data)
+    if (!data) {
       return null;
+    }
     let counter = 0;
-    const d = that.parseJSON(data.body.toString());
+    const d = data.body[0];
     const o = {
       title: d.attributes.titles.en_jp,
       chapterCount: d.attributes.chapterCount,
@@ -78,32 +80,33 @@ class KitsuAPI {
       genres: await that.getGenres(d.relationships.genres.links.related),
       score: Math.round(d.attributes.averageRating),
       image: d.attributes.posterImage.original,
-      synopsis: d.attributes.synopsis.replace(/(?:\r\n|\r|\n)/g, matched => {
-        if(/\r\n/.test(matched) && counter % 2 == 0) {
+      synopsis: d.attributes.synopsis.replace(/(?:\r\n|\r|\n)/g, (matched) => {
+        if (/\r\n/.test(matched) && counter % 2 == 0) {
           counter++;
           return '\n';
         }
         counter++;
         return '';
-      })
+      }),
     };
     return o;
   }
-  parseJSON(raw) {
-    const json = JSON.parse(raw);
-    const p = json.data[0];
-    return p;
-  }
+  /**
+   * Get anime genres
+   * @param {string} link
+   * @return {Promise<Array<string>>}
+   */
   async getGenres(link) {
-    const d = await fetch.get(link);
-    const j = JSON.parse(d.body.toString());
+    const d = await request.get(link);
+    const j = d.body;
     const genres = [];
-    for(const g of j.data) {
-      if(!g || !g.attributes.name)
+    for (const g of j.data) {
+      if (!g || !g.attributes.name) {
         return;
+      }
       genres.push(g.attributes.name);
     }
     return genres;
   }
-} 
+}
 module.exports = KitsuAPI;
