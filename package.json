@@ -1,6 +1,6 @@
 {
   "name": "kitsu-api-wrapper",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This is a wrapper for the Kitsu API.",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "NikoBotDev",
   "license": "MIT",
   "dependencies": {
-    "superagent": "^3.8.3"
+    "node-fetch": "^2.2.0"
   },
   "devDependencies": {
     "eslint": "^5.2.0",
